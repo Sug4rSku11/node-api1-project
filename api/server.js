@@ -6,7 +6,7 @@ const server = express()
 //Global Middleware
 server.use(express.json())
 
-//Create new user Post /api/users
+//POST new user "CREATE" /api/users ***Works***
 server.post('/api/users', async (req, res) => {
     try{
         if(!req.body.name || !req.body.bio) {
@@ -14,7 +14,7 @@ server.post('/api/users', async (req, res) => {
                 message: "Please provide name and bio for the user"
             })
         }else{
-            const newUser = await User.create(req.body)
+            const newUser = await User.insert(req.body)
         res.status(201).json(newUser)
         }
         
@@ -24,7 +24,7 @@ server.post('/api/users', async (req, res) => {
         })
     }
 })
-//Returns all users Get /api/users
+//GET all users Get /api/users ***Works***
 server.get('/api/users', async (req, res) => {
     try{
         const users = await User.find()
@@ -36,7 +36,7 @@ server.get('/api/users', async (req, res) => {
         })
     }
 })
-//Returns specific id Get /api/users/:id
+//GET by ID--  specific id Get /api/users/:id ***Works**
 server.get('/api/users/:id', async (req, res) => {
     try{
         const user = await User.findById(req.params.id)
@@ -54,9 +54,23 @@ server.get('/api/users/:id', async (req, res) => {
     }
 })
 
-//Removes specific id Delete /api/users/:id
-
-//Updates specific user Put /api/users/:id
+//DELETE -- specific id Delete /api/users/:id
+server.delete('/api/users/:id', async (req, res) => {
+    const { id } = req.params
+    try{
+        const user = await user.delete(id)
+        if(!user){
+            res.status(404).json({
+                message: "The user with the specified ID does not exist"
+            })
+        }
+    }catch (err){
+        res.status(500).json ({
+            message: "The user could not be removed"
+        })
+    }
+})
+//UPDATE-- specific user Put /api/users/:id
 server.put('/api/users/:id', async (req, res) => {
     const { id } = req.params
     const { body } = req
